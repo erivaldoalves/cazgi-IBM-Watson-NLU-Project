@@ -3,6 +3,8 @@ import './App.css';
 import EmotionTable from './EmotionTable.js';
 import React from 'react';
 
+//var url = "http://localhost:8080"
+
 class App extends React.Component {
   /*
   We are setting the component as a state named innercomp.
@@ -13,7 +15,8 @@ class App extends React.Component {
   state = {innercomp:<textarea rows="4" cols="50" id="textinput"/>,
             mode: "text",
           sentimentOutput:[],
-          sentiment:true
+          sentiment:true,
+          url: "http://localhost:8080"
         }
   
   /*
@@ -21,6 +24,8 @@ class App extends React.Component {
   If the requested input mode is "text" it returns a textbox with 4 rows.
   If the requested input mode is "url" it returns a textbox with 1 row.
   */
+
+  
  
   renderOutput = (input_mode)=>{
     let rows = 1
@@ -39,9 +44,10 @@ class App extends React.Component {
   
   sendForSentimentAnalysis = () => {
     this.setState({sentiment:true});
-    let url = ".";
+    //let url = ".";
+    let url = this.state.url
     let mode = this.state.mode
-    url = url+"/" + mode + "/sentiment?"+ mode + "="+document.getElementById("textinput").value;
+    url = url+"/" + mode + "/sentiment?"+ mode + "="+ document.getElementById("textinput").value;
 
     fetch(url).then((response)=>{
         response.json().then((data)=>{
@@ -49,8 +55,9 @@ class App extends React.Component {
         let output = data.label;
         let color = "white"
         switch(output) {
-          case "positive": color = "black";break;
-          case "negative": color = "black";break;
+          case "positive": color = "green";break;
+          case "negative": color = "red";break;
+          //default: color = "yellow";
           default: color = "black";
         }
         output = <div style={{color:color,fontSize:20}}>{output}</div>
@@ -61,13 +68,18 @@ class App extends React.Component {
   sendForEmotionAnalysis = () => {
 
     this.setState({sentiment:false});
-    let url = ".";
-    let mode = this.state.mode
-    url = url+"/" + mode + "/emotion?"+ mode + "="+document.getElementById("textinput").value;
+    //let url = ".";
+    //let url = "http://localhost:8080"
+    //let url = ".";
+    let url = this.state.url
 
+    let mode = this.state.mode
+    url = url + "/" + mode + "/emotion?"+ mode + "=" + document.getElementById("textinput").value;
+//console.log('url >>', url)
     fetch(url).then((response)=>{
       response.json().then((data)=>{
       this.setState({sentimentOutput:<EmotionTable emotions={data}/>});
+      //console.log("Data >>", data)
   })})  ;
   }
   
